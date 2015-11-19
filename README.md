@@ -1,0 +1,2 @@
+# scala_for_the_impatient_homework
+scala_for_the_impatient_homework
