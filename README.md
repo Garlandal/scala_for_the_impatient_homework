@@ -90,7 +90,7 @@ for (int i = 10; i >=0; i--) System.out.println(i);
 for (i <- 0 to 10 reverse) print (i)
 ```
 
-2.5 编写一个过程countdown(n: Int),打印从\\(n\\)到0的数字
+2.5 编写一个过程countdown(n: Int),打印从n到0的数字
 
 过程是没有返回值的函数
 ```scala
@@ -123,7 +123,20 @@ def product(s: String): Long={
 ```scala
 def product(s: String): Long= if (s.length == 1) return s.head.toLong else s.take(1).head.toLong * product(s.drop(1))
 ```
+2.10 编写函数计算$$x^n$$, 其中$n$是整数，使用如下的递归定义：
+ - \[x^n=y^2\], 如果$n$是正偶数的话，哲理的\[y=x^{n/2}\]
+ - $$x^n=x\dot x^{n-1}$$，如果n是正奇数的话
+ - \[x^0\] = 1
+ - \[x^n=\frac{1}{x^{-n}}\], 如果n是负数的话
 
+不能使用return语句
 
-
+```scala
+def power(x: Double, n: Int): Double={
+    if (n==0) 1
+    else if (n%2 == 0 && n > 0) power(x, n/2)*power(x, n/2)
+    else if (n%2 == 1 && n > 0) x*power(x, n-1)
+    else 1/power(x, -n)
+    }
+```
 <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
