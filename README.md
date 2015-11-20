@@ -90,7 +90,7 @@ for (int i = 10; i >=0; i--) System.out.println(i);
 for (i <- 0 to 10 reverse) print (i)
 ```
 
-2.5 编写一个过程countdown(n: Int),打印从$n$到0的数字
+2.5 编写一个过程countdown(n: Int),打印从\\(n\\)到0的数字
 
 过程是没有返回值的函数
 ```scala
@@ -123,3 +123,7 @@ def product(s: String): Long={
 ```scala
 def product(s: String): Long= if (s.length == 1) return s.head.toLong else s.take(1).head.toLong * product(s.drop(1))
 ```
+
+
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>script>
