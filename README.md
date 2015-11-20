@@ -126,4 +126,4 @@ def product(s: String): Long= if (s.length == 1) return s.head.toLong else s.tak
 
 
 
-<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>script>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
