@@ -123,11 +123,11 @@ def product(s: String): Long={
 ```scala
 def product(s: String): Long= if (s.length == 1) return s.head.toLong else s.take(1).head.toLong * product(s.drop(1))
 ```
-2.10 编写函数计算$$x^n$$, 其中$n$是整数，使用如下的递归定义：
- - \[x^n=y^2\], 如果$n$是正偶数的话，哲理的\[y=x^{n/2}\]
- - $$x^n=x\dot x^{n-1}$$，如果n是正奇数的话
- - \[x^0\] = 1
- - \[x^n=\frac{1}{x^{-n}}\], 如果n是负数的话
+2.10 编写函数计算x^n, 其中$n$是整数，使用如下的递归定义：
+ - x^n=y^2, 如果$n$是正偶数的话，这里的y=x^(n/2)
+ - x^n=x * x^(n-1)，如果n是正奇数的话
+ - x^0 = 1
+ - x^n=1/x^(-n), 如果n是负数的话
 
 不能使用return语句
 
@@ -139,4 +139,93 @@ def power(x: Double, n: Int): Double={
     else 1/power(x, -n)
     }
 ```
-<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
+
+### 第三章 数组相关操作
+
+3.1 编写一段代码，将a设置为一个n个随机整数的数组，要求随机数介于[0, n)之间
+
+查阅scaladoc的random包里面的nextInt方法
+
+```scala
+import scala.util.Random
+
+def randomArray(n :Int) = for (i <- 0 until n) yield Random.nextInt(n)
+```
+
+3.2 编写一个循环，将整数数组中相邻的元素置换。
+
+```scala
+def replacedArray(array: Array[Int]): Array[Int] = {
+    for (i <- 1 until (array.length, 2)){
+        var tmp = array(i)
+        array(i) = array(i-1)
+        array(i-1) = tmp
+        }
+    array
+    }
+```
+
+3.3 重复上一个练习，这次生成一个新的值交换过的数组。
+
+```scala
+def replacedArray(array: Array[Int]): Array[Int] = {
+    for (i <- 1 until (array.length, 2)){
+        var tmp = array(i)
+        array(i) = array(i-1)
+        array(i-1) = tmp
+        }
+    for (i <- array) yield i
+    }
+```
+
+3.4 给定一个整数数组，产出一个新的数组，包含元数组中的所有正值，以原有顺序排列，之后的元素是所有零或者负值，以原有顺序排列
+
+```scala
+def sortedArray(array: Array[Int]): Array[Int] = (array.filter(_ > 0).toBuffer ++ array.filter(_ <= 0)).toArray
+```
+
+3.5 如何计算Array[Double]的平均值
+
+```scala
+def countAverage(array: Array[Double]): Double = array.sum/array.length
+```
+
+3.6 如何重新组织Array[Int]的元素将它们逆序？对于ArrayBuffer[Int]如何做？
+
+> Array和ArrayBuffer均有reverse方法来将元素逆序
+
+3.7 编写一段代码，产出数组中的所有值，去重
+
+```scala
+for (i <- array.distinct) print (i)
+```
+
+3.8 对3.4，收集负值元素的下标，反序，去掉最后一个下标，然后对每一个下标调用a.remove(i)
+
+```scala
+def remove(array: Array[Int]): Array[Int] = {
+    val newArray = array.toBuffer
+    val index = (for (i <- 0 until array.length if array(i) < 0) yield i).toBuffer
+    index.remove(0)
+    index.reverse.foreach(newArray.remove(_))
+    newArray.toArray
+    }
+```
+
+3.9 创建一个由java.util.TimeZone.getAvailableIDs返回的时区集合，判断条件是它在每周。去掉"America/"前缀并排序
+```scala
+import java.util.TimeZone.getAvailableIDs
+val timeZones = (for (i <- getAvailableIDs if i.startsWith("America/")) yield i.replace("America/", "")).sorted
+```
+
+3.10 引入java.awt.datatransfer.\_,并构建一个类型为SystemFlavorMap类型的对象：
+```java
+val flavors = SystemFlavorMap.getDefaultFlavorMap().asInstanceof[SystemFlavorMap]
+```
+然后以DataFlavor.imageFlavor为参数调用getNativesForFlavor方法，以Scala缓冲保存返回值。
+```scala
+import java.awt.datatransfer._
+
+val flavors = SystemFlavorMap.getDefaultFlavorMap().asInstanceOf[SystemFlavorMap]
+val imageArray = flavors.getNativesForFlavor(DataFlavor.imageFlavor).toArray.toBuffer
+```
