@@ -229,3 +229,105 @@ import java.awt.datatransfer._
 val flavors = SystemFlavorMap.getDefaultFlavorMap().asInstanceOf[SystemFlavorMap]
 val imageArray = flavors.getNativesForFlavor(DataFlavor.imageFlavor).toArray.toBuffer
 ```
+
+### 第四章 映射和元组
+
+4.1 设置一个映射，其中包含你想要的一些装备，以及它们的价格。然后构建另一个映射，采用同一组键，但在价格上打9折
+
+```scala
+val equipment = Map(("a", 10), ("b",15), ("c", 30))
+val newEquipment = for ((k, v) <- equipment) yield (k, 0.9*v))
+```
+
+4.2 编写一段程序，从文件中读取单词。用一个可变映射来清点每一个单词出现的频率，打印出所有单词和它们出现的次数
+
+```scala
+import scala.io.Source
+
+val source = Source.fromFile("myfile.txt")
+val tokens = source.mkString.split("\\s+")
+val wordsCount = new scala.collection.mutable.HashMap[String, Int]
+for (word <- tokens) wordsCount(word) =  wordsCount.getOrElse(word, 0) + 1
+for ((k, v) <- wordsCount) print (k, v)
+```
+
+4.3 重复前一个练习，这次使用不可变映射
+
+```scala
+import scala.io.Source
+
+val Source = Source.fromFile("myfile.txt")
+val tokens = source.mkString.split("\\s+")
+var wordsCount = Map[String, Int]()
+for (word <- tokens) wordsCount += (word -> (wordsCount.getOrElse(word, 0)+1))
+for ((k, v) <- wordsCount) print (k, v)
+```
+
+4.4 重复前一个练习，这次使用已排序映射，以便单词可以按顺序打印出来
+
+修改以下映射类型
+```scala
+val wordsCount = scala.collection.immutable.SortedMap[String, Int]()
+```
+
+4.5 重复前一个练习使用java.util.TreeMap并使之适用于Scala API
+```scala
+import scala.io.Source
+import scala.collection.JavaConversions.mapAsScalaMap
+import java.util.TreeMap
+
+val source = Source.fromFile("myfile.txt")
+val tokens = source.mkString.split("\\s+")
+val wordsCount: scala.collection.mutable.Map[String, Int] = new java.util.TreeMap[String, Int]
+for (word <- tokens) wordsCount(word) = wordsCount.getOrElse(word, 0) + 1
+for ((k, v) <- wordsCount) print (k, v)
+```
+
+4.6 定义一个链式哈希映射，将"Monday"映射到java.util.Calendar.MONDAY, 依次类推加入其他日期。展示元素是以插入的顺序被访问的
+
+使用LinkedHashMap
+```scala
+import scala.collection.mutable.LinkedHashMap
+import java.util.Calendar
+
+val day = new LinkedHashMap[String, Int]
+
+day += ("Monday" -> Calendar.MONDAY)
+day += ("Tuesday" -> Calendar.TUESDAY)
+day += ("Wednesday" -> Calendar.WEDNESDAY)
+day += ("Thursday" -> Calendar.THURSDAY)
+day += ("Friday" -> Calendar.FRIDAY)
+day += ("Saturday" -> Calendar.SATURDAY)
+day += ("Sunday" -> Calendar.SUNDAY)
+print (day.mkString(" , "))
+```
+
+4.7 打印所有java系统属性的表格，格式化
+
+```scala
+import scala.collection.JavaConversions.propertiesAsScalaMap
+val props: scala.collection.Map[String, String] = System.getProperties()
+val maxLength = (for (key <- props.keySet) yield key.length).max
+for (key <- props.keySet) print (key + " " * (maxLength-key.length) + "| " + props(key)+"\n")
+```
+
+4.8 编写一个函数minmax(values: Array[Int]), 返回数组中最小值和最大值的对偶
+
+```scala
+def minmax(values: Array[Int]) = (values.max, values.min)
+```
+
+4.9 编写一个函数iteqgt(values: Array[Int], v: Int),返回数字钟小于v、等于v和大于v的数量，要求三个值一起返回
+
+```scala
+def iteqgt(values: Array[Int], v: Int) = (values.filter(_ < v).length, values.filter(_ = v).elgnth, values.filter(_ > v).lenght)
+```
+
+4.10 当你将两个字符串拉链在一起，比如"Hello".zip("World"),会是什么结果，想出一个讲的通的用例
+
+```scala
+scala.collection.immutable.IndexedSeq[(Char, Char)] = Vector((H,W), (e,o), (l,r), (l,l), (o,d))
+```
+> Returns a string formed from this string and another iterable collection by combining corresponding elements in pairs, 因为字符串"World"是可迭代集合，它的单位是每个字符，所以会返回两两组合的字符
+
+### 第五章类
