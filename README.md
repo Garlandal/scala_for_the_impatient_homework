@@ -330,4 +330,114 @@ scala.collection.immutable.IndexedSeq[(Char, Char)] = Vector((H,W), (e,o), (l,r)
 ```
 > Returns a string formed from this string and another iterable collection by combining corresponding elements in pairs, 因为字符串"World"是可迭代集合，它的单位是每个字符，所以会返回两两组合的字符
 
-### 第五章类
+### 第五章 类
+
+5.1 改进5.1节的Counter类，让它不要在Int.Max.Value时变成负数
+
+使用BigInt就好啦
+```scala
+class Counter {
+    private var value: BigInt = 0
+    def increment() { value += 1}
+    def current() = value
+    }
+```
+
+5.2 编写一个BankAccount类，加入deposit和withdraw方法，和一个只读的balance属性.
+
+```scala
+class BankAccount {
+    val balance = 0
+    def deposit() {}
+    def withdraw() {}
+    }
+```
+
+5.3 编写一个Time类，加入只读属性hours和minutes，和一个检查某一时刻是否早于另一时刻的方法before(other: Time): Boolean，Time对象应该
+以new Time(hrs, min)方式构建，其中hrs小时数以军用时间格式呈现(介于0和23之间)
+
+```scala
+class Time(val hours:Int, val minutes:Int){
+    def before(other: Time): Boolean = hours < other.hours || (hours == other.hours && minutes < other.minutes)
+    }
+```
+
+5.4 重新实现前一个练习中的Time类，将每部接口呈现改成自午夜起的分钟数(介于0到24\*60-1)之间。不改变公有接口
+
+```scala
+class Time(val hours:Int, val minutes:Int){
+    def before(other: Time): Boolean = hours * 60 + minutes < other.hours * 60 + other.minutes
+    }
+```
+
+5.5 创建一个Student类，加入可读写的JavaBeans属性name(类型为String)和id(类型为Long)。有哪些方法被生成？(使用
+javap查看)，可以在scala中调用JavaBeans版的getter和setter方法吗？应该这样做吗？
+
+
+> 会生成8个方法，name和id各四个，分别是scala的setter和getter还有java的setfoo和getfoo方法
+```scala
+//在scala-2.11.7这个版本，Bean属性在scala.beans.BeanProperty这里
+import scala.beans.BeanProperty
+
+class Student {
+    @BeanProperty var name: String = _
+    @BeanProperty var id: Long = _
+    }
+```
+下面是javap Student的结果
+```scala
+Compiled from "Student.scala"
+public class Student {
+    public java.lang.String name();
+    public void name_$eq(java.lang.String);
+    public void setName(java.lang.String);
+    public long id();
+    public void id_$eq(long);
+    public void setId(long);
+    public java.lang.String getName();
+    public long getId();
+    public Student();
+    }
+```
+
+5.6 在5.2节的Person类中提供一个主构造器，将负年龄转换为0
+
+> 主构造器会执行类定义中所有语句，在类定义中转换即可
+```scala
+class Person(var age:Int){
+    age = if (age<0) 0 else age
+    }
+```
+
+5.7 编写一个Person类，其主构造器接受一个字符串，该字符串包含名字、空格和姓，如new Person("Fred Smith"),
+提供只读属性firstName和lastName.主构造器参数应该是var,val还是普通参数呢？为什么？
+
+> val, 因为提供的两个属性是只读的
+
+5.8 创建一个Car类，以只读属性对应制造商、型号名称、型号年份以及一个可读写的属性用于车牌。提供四组构造器。
+每一个构造器都要求制造商和型号名称为必填。型号年份以及车牌为可选，如果未填，则型号年份设置为-1，车牌设置
+为空字符串。你会选择哪一个作为你的主构造器？为什么？
+
+> 这四组构造器是什么？
+
+5.9 在Java、C#和C++重做前一个练习。Scala相比精简多少？
+
+> 这三门语言我一门也不会真是为难我了
+
+5.10 考虑如下类
+```scala
+class Employee(val name:String, var salary: Double) {
+    def this() {this("John Q. Public", 0.0)}
+    }
+```
+重写改类，使用显示的字段定义，和一个缺省主构造器。你更倾向于那种形式？为什么？
+
+```scala
+class Employee{
+    val name: String = "John Q. Public"
+    val salary: Double = 0.0
+    }
+```
+第二种，感觉什么东西带上了this就费解了好几倍
+
+### 第六章 对象
