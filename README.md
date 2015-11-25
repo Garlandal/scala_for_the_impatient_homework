@@ -375,6 +375,7 @@ javap查看)，可以在scala中调用JavaBeans版的getter和setter方法吗？
 
 
 > 会生成8个方法，name和id各四个，分别是scala的setter和getter还有java的setfoo和getfoo方法
+
 ```scala
 //在scala-2.11.7这个版本，Bean属性在scala.beans.BeanProperty这里
 import scala.beans.BeanProperty
@@ -384,7 +385,9 @@ class Student {
     @BeanProperty var id: Long = _
     }
 ```
+
 下面是javap Student的结果
+
 ```scala
 Compiled from "Student.scala"
 public class Student {
@@ -418,7 +421,7 @@ class Person(var age:Int){
 每一个构造器都要求制造商和型号名称为必填。型号年份以及车牌为可选，如果未填，则型号年份设置为-1，车牌设置
 为空字符串。你会选择哪一个作为你的主构造器？为什么？
 
-> 这四组构造器是什么？
+> 这四组构造器是神马
 
 5.9 在Java、C#和C++重做前一个练习。Scala相比精简多少？
 
@@ -441,3 +444,102 @@ class Employee{
 第二种，感觉什么东西带上了this就费解了好几倍
 
 ### 第六章 对象
+
+6.1 编写一个Conversions对象，加入inchesToCentimeters、gallonsToLiters和milesToKilometers方法
+
+```scala
+object Conversions {
+    def inchesToCentimeters() = {}
+    def gallonsToLiters() = {}
+    def milesToKilometers() = {}
+    }
+```
+
+6.2 前一个练习不是很面向对象。提供一个通用的超类UnitConversion并定义扩展该超类的InchesToCentimeters、
+GallonsToLiters和MilesToKilometers对象。
+
+```scala
+abstract class UnitConversion {
+    def InchesToCentimeters() = {}
+    def gallonsToLiters() = {}
+    def milesToKilometers() = {}
+    }
+
+object InchesToCentimeters extends UnitConversion {
+    override def InchesToCentimeters() = {}
+    }
+
+object GallonsToLiters extends UnitConversion {
+    override def GallonsToLiters() = {}
+    }
+
+object MilesToKilometers extends UnitConversion {
+    override de f milesToKilometers() = {}
+    }
+```
+
+6.3 定义一个扩展自java.awt.Point的Origin对象。为什么说这实际上不是个好主意？
+
+> Point类中的getLocation方法返回的是Point对象，扩展后需要对getLocation方法进行重写
+
+6.4 定义一个Point类和一个伴生对象，使得我们可以不用new而直接用Point(3,4)来构造Point实例
+
+> 使用apply方法
+```scala
+class Point(x: Int, y: Int) {
+
+    }
+
+object Point {
+    def apply(x: Int, y:Int) = new Point(x, y)
+    }
+val position = Point(3 ,4)
+```
+
+6.5 编写一个scala应用程序，使用App特质，以反序打印命令行参数，用空格隔开。举例说，scala Reverse Hello
+World应该打印出World Hello
+
+```scala
+object Reverse extends App {
+    args.reverse.foreach(arg => print(arg + ""))
+    }
+```
+
+6.6 编写一个扑克牌4种花色的枚举，让其toString方法分别返回♣,♦,♥或♠
+
+```scala
+object CardType extends Enumeration {
+    val Mei = Value("♣")
+    val Fang = Value("♦")
+    val Hong = Value("♥")
+    val Hei = Value("♠")
+    }
+//toString方法没明白怎么重写
+```
+
+6.7 实现一个函数，检查某张牌的花色是否为红色
+
+```scala
+object CardType extends Enumeration{
+    val Mei = Value("♣")
+    val Fang = Value("♦")
+    val Hong = Value("♥")
+    val Hei = Value("♠")
+    }
+def checkRed(card : CardType.Value): Boolean = card == Card.Fang || card == Card.Hong
+
+checkRed(Card.Mei)
+    }
+```
+
+6.8 编写一个枚举，描述RGB立方体的8个角。ID使用颜色值(例如，红色是0xff0000)
+
+```scala
+object RBG extends Enumeration {
+    val Red = Value(0xff0000, "Red")
+    //别的我就不写了
+    }
+```
+
+### 第七章 包和引入
+
