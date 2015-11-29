@@ -485,10 +485,9 @@ object MilesToKilometers extends UnitConversion {
 6.4 定义一个Point类和一个伴生对象，使得我们可以不用new而直接用Point(3,4)来构造Point实例
 
 > 使用apply方法
-```scala
-class Point(x: Int, y: Int) {
 
-    }
+```scala
+class Point(x: Int, y: Int) {}
 
 object Point {
     def apply(x: Int, y:Int) = new Point(x, y)
@@ -542,4 +541,132 @@ object RBG extends Enumeration {
 ```
 
 ### 第七章 包和引入
+
+7.1 编写示例程序，展示为什么 package com.horstmann.impatient 不同于 package com, oackage horstmann,
+package impatient
+
+> 作用域规则
+
+```scala
+package com {
+    class A() {}
+
+    package horstmann {
+        class B(arg: A) {}
+
+        package impatient {
+            class C(arg1: A, arg2: B) {}
+            }
+        }
+    }
+
+package com.horstmann.impatient {
+    class D(arg1: A) {} //A找不到
+}
+```
+
+7.2 编写一段让你的scala朋友们感到困惑的代码，使用一个不在顶部的com包。
+
+```scala
+//file a
+package com {
+    package horstmann {
+        package impatient {
+            class A {
+                val a = new collection.mutable.ArrayBuffer[Int]
+                }
+            }
+        }
+    }
+
+//file b
+package com {
+    package horstmann {
+        package collection {
+            }
+        }
+    }
+```
+
+7.3 编写一个包random,加入函数nextInt():Int、nextDouble():Double和setSeed(seed:Int):Unit.生成随机数的算法
+采用线性同余生成器：后值=(前值\*a+b) mod 2^n,其中a=1664525,b=1013904223,n=32,前值的初始值为seed.
+
+```scala
+package random{
+    package object random{
+        var seed: Int = _
+        val a = BigInt(1664525)
+        val b = BigInt(1013904223)
+        val n = 32
+
+        def nextInt():Int = {
+            val newSeed = (seed*a + b) % BigInt(2).pow(n)
+            newSeed.toInt
+            }
+
+        def nextDouble():Double = {
+            val newSeed = (seed*a + b) % BigInt(2).pow(n)
+            newSeed.toDouble
+            }
+        }
+    }
+```
+
+7.4 在你看来scala的设计者为什么要提供package object语法而不是简单地让你将函数和变量添加到包中呢？
+
+> 书上说这是java虚拟机的限制
+
+7.5 private[com] def giveRaise(rate: Double)的含义是什么？有用吗？
+
+> 仅对com包中的所有成员可见
+
+7.6 编写一段程序，将java哈希映射中的所有元素拷贝到scala哈希映射，用引入语句重命名这两个类。
+
+```scala
+import java.util.{HashMap => JavaHashMap}
+import scala.collection.mutable.HashMap
+
+val javaMap = new JavaHashMap[String, Int]()
+javaMap.put("a", 1)
+javaMap.put("b", 2)
+val scalaMap = new HashMap[String, Int]()
+for (key <- javaMap.keySet().toArray) scalaMap(key.toString) = javaMap.get(key)
+```
+
+7.7 在前一个联系中，讲所有引入语句移动到尽可能小的作用域里
+
+```scala
+object j2s extends App {
+    import java.util.{HashMap => JavaHashMap}
+    import scala.collection.mutable.HashMap
+
+    val javaMap = new JavaHashMap[String, Int]()
+    javaMap.put("a", 1)
+    javaMap.put("b", 2)
+    val scalaMap = new HashMap[String, Int]()
+    for (key <- javaMap.keySet().toArray) scalaMap(key.toString) = javaMap.get(key)>)
+    }
+```
+
+7.8 以下代码的作用是什么？这是个好主意吗？ import java.\_, import javax.\_
+
+> 导入java和javax下的所有成员，这样不好，会导致命名空间混乱
+
+7.9 编写一段程序，引入java.lang.System类，从user.name系统属性读取用户名，从Console对象读取一个密码，如果
+密码不是"secret"，则在标准错误流中打印一个消息，如果密码是"secret",则在标准输出流中打印一个问候消息。不要使用任何
+其他引入，也不是使用任何限定词。
+
+```scala
+import java.lang.System
+
+var passwd = Console.readLine()
+if (passwd == "secret") System.out.println(System.getProperty("user.name"))
+    else System.err.println("wrong password!")
+```
+
+7.10 除了StringBuilder，还有哪些java.lang的成员是被scala包覆盖的
+
+> Boolean,Byte,Double,Float,Long,Short,ProcessBuilder,Process．．．
+
+### 第八章 继承　
 
