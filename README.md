@@ -9,7 +9,7 @@
 !=   *   <        ==   >>>            getClass       toChar     toLong     unary_-
 ##   +   <<       >    ^              hashCode       toDouble   toShort    unary_~
 %    -   <=       >=   asInstanceOf   isInstanceOf   toFloat    toString   |
-&    /   <init>   >>   equals         toByte         toInt      unary_+ 
+&    /   <init>   >>   equals         toByte         toInt      unary_+
 ```
 
 1.2 在scala REPL中，计算3的平方根，然后对该值求平方，计算这个结果与3相差多少？
@@ -670,3 +670,164 @@ if (passwd == "secret") System.out.println(System.getProperty("user.name"))
 
 ### 第八章 继承　
 
+8.1　扩展如下的BankAccount类，新类CheckingAccount对每次存款和取款都收取1美元的手续费。
+
+```scala
+class BankAccount (initialBalance: Double) {
+  private var balance = initialBalance
+  def deposit(amount: Double) = {balance += amount; balance}
+  def withdraw(amount: Double) = {balance -= amount; balance}
+}
+```
+
+```scala
+class CheckingAccount(initialBalance: Double) extends BankAccount(initialBalance) {
+  override def deposit(amount: Double) = super.deposit(amount) - 1
+  override def withdraw(amount: Double) = super.withdraw(amount) - 1
+}
+```
+
+8.2 扩展前一个练习的BankAccount类，新类SavingAccount每个月都有利息产生(earnMonthlyInterest方法被调用)，
+并且有每月三次免手续费的存款或取款。在earnMonthlyInterest方法中重置交易数。
+
+```scala
+class SavingAccount(initialBalance: Double) extends BankAccount(initialBalance) {
+  private var num: Int = 3
+  def earnMonthlyInterest() = {
+    num = 3
+    super.deposit(1)
+  }
+  override def deposit(amount: Double): Double = {
+    num -= 1
+    if (num < 1) super.deposit(amount) -1 else super.deposit(amount)
+  }
+
+  override def withdraw(amount: Double): Double = {
+    num -= 1
+    if (num <1) super.withdraw(amount) - 1 else super.withdraw(amount)
+  }
+}
+```
+
+8.3 翻开你喜欢的Java或C++教科书，一定会找到用来讲解继承层级的示例，可能是 员工、宠物、图形或类似的东西。用scala来
+实现这个示例
+
+这是python的
+
+```python
+class Animal(object):
+  def run(self):
+    print "animal is running"
+
+class Dog(Animal):
+  def run(self):
+    print "dog is running"
+
+class LittleDog(Dog):
+  def run(self):
+    print "littledog is running"
+```
+
+这是scala的
+
+```scala
+class Animal {
+  def run {println("animal is running")}
+}
+
+class Dog extends Animal{
+  override def run {println("Dog is running")}
+}
+
+class LittleDog extends Dog {
+  override def run {println("littledog is running")}
+}
+```
+
+8.4 定义一个抽象类Item，缴入方法price和descrip。SimpleItem是一个在构造器中给出价格和描述的物件。利用
+val可以重写def这个事实，Bundle是一个可以包含其他物件的物件。其价格是打包中所有物件的价格之和。同事提供一个将
+物件添加到打包当中的机制，以及一个合适的description的方法。
+
+```scala
+abstract class Item{
+  def price(): Double
+  def description(): String
+}
+
+class SimpleItem(val price: Double, val description: String) extends Item {}
+
+class Bundle extends Item{
+  val items = collection.mutable.ArrayBuffer[Item]()
+
+  def price(): Double = {
+    var total = 0
+    items.foreach(total += _.price())
+    total
+  }
+
+  def description()： String = {
+    items.mkString(" , ")
+  }
+
+  def addItem(item: Item){
+    items += item
+  }
+}
+```
+
+8.5 设计一个Point类，其x和y坐标可以通过构造器提供。提供一个子类LabeledPoint，其构造器接受一个标签值
+和x,y坐标，比如：new LabeledPoint("Black Thursday", 1929, 230.07)
+
+```scala
+class Point(x: Int, y: Double) {}
+
+class LabeledPoint(label: String, x: Int, y: Double) extends Point(x, y) {}
+```
+
+8.6 定义一个抽象类Shape、一个抽象方法centerPoint，以及该抽象类的子类Rectangle和Circle。为子类提供合适的构造器，
+并重写centerPoint方法。
+
+```scala
+abstract class Shape{
+  def centerPoint()
+}
+
+class Rectangle(x1:Int, y1:Int, x2:Int, y2:Int) extends Shape{
+  def centerPoint() {}
+}
+
+class Circle(x:Int, y:Int, r:Int) extends Shape{
+  def centerPoint() {}
+}
+```
+
+8.7 提供一个Square类，扩展自java.awt.Rectangle并且有三个构造器： 一个以给定的端点和宽度构造正方形，一个以(0, 0)为
+端点和给定的宽度构造正方形，一个以(0 ,0)为端点、0为宽度构造正方形。
+
+```scala
+import java.awt.{Point, Rectangle}
+
+class Square(point: Point, width: Int) extends Rectangle(point.x, point.y, width, width){
+  def this(){
+    this(new Point(0, 0), 0)
+  }
+
+  def this(width: Int){
+    this(new point(0, 0), width)
+  }
+}
+```
+
+8.8 编译8.6节中的Person和SecretAgent类并使用javap分析类文件。总共有多少name的getter方法？它们分别取什么值？
+
+> -唔....-
+
+8.9 在8.10节中的Creature类中，将val range替换成一个def。如果你在Ant子类中也用def的话会有什么效果？如果在子类中使用val
+又会有什么效果？为什么？
+
+> 因为def可以重写def，而val只能重写另一个val或者不带参数的def，所以在子类中使用的def是ok的，使用val则不能通过编译
+
+8.10 文件scala/collection/immutable/Stack.scala包含如下定义：class Stack[A] protected (protected val elems: List[A])
+请解释protected关键字的含义。
+
+> 只能被其子类调用，不能被外界直接调用
